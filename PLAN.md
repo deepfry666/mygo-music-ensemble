@@ -2,7 +2,7 @@
 
 仓库 Ensemble（合奏）。Duet 是网易云 + Spotify 的双平台插件；Ferry 是歌单同步，做在 Duet 里面。
 
-> 状态：第 1 阶段（网易云部分）代码已完成，还没在 app 里实际试过。基于 egoist/mygo-music 0.1.20（2026-11-07）。
+> 状态：第 1 阶段（网易云）已在 app 里试过；第 2 阶段（Spotify）代码完成，用模拟接口测过，还没连真实的 Spotify 账号试。基于 egoist/mygo-music 0.1.20（2026-11-07）。
 >
 > 已定：许可证 AGPL-3.0-or-later；Spotify 写操作走官方 API，读推荐走网页接口（可选）；Spotify 的歌默认用网易云音频播放；同步做进这个插件。
 

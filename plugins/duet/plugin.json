@@ -1,12 +1,17 @@
 {
   "id": "duet",
   "name": "Duet",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "minAppVersion": "0.1.20",
   "main": "index.js",
   "playback": "stream",
   "permissions": {
-    "network": ["music.163.com", "interfacepc.music.163.com"]
+    "network": [
+      "music.163.com",
+      "interfacepc.music.163.com",
+      "api.spotify.com",
+      "accounts.spotify.com"
+    ]
   },
   "settings": [
     {
@@ -18,13 +23,44 @@
       "key": "ne.loginMethod",
       "label": "NetEase Sign-in Method",
       "help": "Leave empty or use qr for QR sign-in; use web for website sign-in. Sessions are stored in the host's plugin data files, not the system keychain."
+    },
+    {
+      "key": "sp.clientId",
+      "label": "Spotify Client ID",
+      "help": "Create an app in Spotify's developer dashboard with the redirect URI http://127.0.0.1:43110/callback and Web API ticked, then paste its Client ID here. The app's owner needs Premium.",
+      "link": "https://developer.spotify.com/dashboard"
     }
   ],
   "navigation": [
-    { "title": "For You", "builtin": "home", "icon": "home" },
-    { "title": "Daily Recommendations", "page": "ne:daily", "icon": "calendar" },
-    { "title": "Personal FM", "builtin": "stations", "icon": "radio" },
-    { "title": "Charts", "page": "ne:charts", "icon": "chart" },
-    { "title": "Podcasts", "page": "ne:podcasts", "icon": "podcast" }
+    {
+      "title": "For You",
+      "builtin": "home",
+      "icon": "home"
+    },
+    {
+      "title": "Daily Recommendations",
+      "page": "ne:daily",
+      "icon": "calendar"
+    },
+    {
+      "title": "Spotify",
+      "page": "sp:home",
+      "icon": "star"
+    },
+    {
+      "title": "Personal FM",
+      "builtin": "stations",
+      "icon": "radio"
+    },
+    {
+      "title": "Charts",
+      "page": "ne:charts",
+      "icon": "chart"
+    },
+    {
+      "title": "Podcasts",
+      "page": "ne:podcasts",
+      "icon": "podcast"
+    }
   ]
 }

@@ -97,8 +97,8 @@ test("pages go to their platform, and the pages they link to are tagged", async 
 
 test("the manifest's pages and settings are all of a platform", async () => {
   const manifest = JSON.parse(await readFile(`${pluginDirectory}/plugin.json`, "utf8"));
-  for (const item of manifest.navigation) if (item.page) assert.match(item.page, /^ne:/);
-  for (const s of manifest.settings) assert.match(s.key, /^ne\./);
+  for (const item of manifest.navigation) if (item.page) assert.match(item.page, /^(ne|sp):/);
+  for (const s of manifest.settings) assert.match(s.key, /^(ne|sp)\./);
   const zh = JSON.parse(await readFile(`${pluginDirectory}/locales/zh-CN.json`, "utf8"));
   for (const text of [manifest.name, ...manifest.settings.map((s: { label: string }) => s.label)]) {
     assert.ok(zh[text], `no translation of ${text}`);

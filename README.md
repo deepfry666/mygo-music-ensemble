@@ -4,7 +4,7 @@
 
 | 插件 | 中文名 | 是什么 | 状态 |
 |---|---|---|---|
-| **Duet** | 二重奏 | 一个插件里同时用网易云音乐和 Spotify。两边的歌单、推荐、喜欢的歌并排放着，不合并，想听哪边就点哪边，不用切换音源 | 网易云部分已完成，Spotify 接入中 |
+| **Duet** | 二重奏 | 一个插件里同时用网易云音乐和 Spotify。两边的歌单、推荐、喜欢的歌并排放着，不合并，想听哪边就点哪边，不用切换音源 | 网易云和 Spotify 都已接入（0.2.0） |
 | **Ferry** | 渡 | 把歌单摆渡到另一个平台，先做网易云 → Spotify，支持手动和自动同步。作为 Duet 的一部分，和它共用登录 | 计划中 |
 
 进度和设计见 [PLAN.md](PLAN.md)。
@@ -18,7 +18,25 @@
 
 app 会下载最新 Release 里的 `duet.zip`，安装前会先征得你的同意。装好后，在音源里选 **二重奏**，点 **登录**，用网易云音乐 App 扫码。
 
-目前只能用网易云部分，Spotify 还在接入中。
+### 连接 Spotify
+
+Spotify 只能通过它的官方 API 接入，需要你自己建一个开发者 App：
+
+1. 用 Premium 账号登录 [Spotify 开发者后台](https://developer.spotify.com/dashboard)，点 **Create app**。名称和描述随便填，Redirect URI 填 `http://127.0.0.1:43110/callback`（必须一字不差），勾选 **Web API**，保存。
+2. 复制这个 App 的 **Client ID**，粘贴到 MyGo Music 里 二重奏 插件设置的 **Spotify Client ID** 一栏。
+3. 打开侧边栏的 **Spotify** 页，点 **连接 Spotify**，在浏览器里批准授权，再回到 app 点 **打开 Spotify**。还没登录网易云的话，直接点 **登录**，会先扫网易云的码，再打开 Spotify 授权页。
+
+开发模式的 App 只允许创建者本人，以及在后台 User Management 里加进去的账号（最多 5 个）登录。
+
+### 用起来是什么样
+
+- **歌单**：两边的歌单都在“我的歌单”里，Spotify 的名字后面带 “· Spotify”，“Spotify 喜欢的歌曲”也是其中一个歌单。
+- **播放**：Spotify 的 API 不提供音频，所以 Spotify 的歌会先在网易云上找到同一首（按歌名、歌手、时长匹配，避开翻唱、Live、伴奏），再用网易云的音源播放，歌词和评论也用网易云的。网易云上没有的歌，会提示无法播放。
+- **跨平台加歌**：在网易云的歌上点“添加到歌单”，可以直接选 Spotify 的歌单，反过来也一样。找不到对应歌曲的会跳过，并提示有几首没加上。
+- **搜索**：同时搜两边，网易云的结果在前。查询前面加 `sp:` 只搜 Spotify，加 `ne:` 只搜网易云。
+- **Spotify 页**：最近播放、常听的歌和艺人、收藏的专辑、你的歌单。
+
+Spotify 开发模式的限制：只能打开你自己创建或参与协作的歌单，看不到 Spotify 官方推荐歌单，搜索每页最多 10 条，也不能关注艺人。
 
 ## 从源码构建
 
@@ -49,15 +67,18 @@ gh release create v<版本号> dist/release/duet.zip --title "Duet <版本号>"
 pnpm test
 ```
 
-会跑两组测试：
+会跑这几组测试：
 - 上游网易云插件自带的 59 个测试，跑在 `dist/netease` 上。
-- Duet 的测试，跑在 `dist/duet` 上：检查 ID 前缀、存储隔离和设置名。
+- Duet 的测试，跑在 `dist/duet` 上：ID 前缀、存储隔离，以及用模拟的 Spotify 接口测登录（PKCE）、token 刷新、歌单、匹配播放、跨平台加歌和搜索。
+- 歌曲匹配和 SHA-256 的单元测试。
 
 ## 结构
 
 ```
 packages/core/      多平台的 ID 前缀（ne: / sp:）和按 ID 分发调用
 packages/netease/   网易云（源自 AkinoKaede/mygo-music-netease-cloud-music，见 NOTICE.md）
+packages/spotify/   Spotify 官方 Web API：PKCE 登录、曲库读写
+packages/match/     跨平台歌曲匹配
 plugins/duet/       Duet 的入口、plugin.json、翻译
 scripts/build.ts    用 esbuild 打成 MyGo 能直接加载的单个文件
 ```
