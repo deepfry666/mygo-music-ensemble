@@ -1,0 +1,20 @@
+{
+  "name": "mygo-netease-spotify",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "scripts": {
+    "build": "node scripts/build.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test:netease": "PLUGIN_DIR=dist/netease node --test 'packages/netease/tests/*.test.ts'",
+    "test:duo": "PLUGIN_DIR=dist/netease-spotify node --test 'plugins/netease-spotify/tests/*.test.ts'",
+    "test": "pnpm build && pnpm test:netease && pnpm test:duo"
+  },
+  "engines": { "node": ">=24" },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "esbuild": "0.28.2",
+    "typescript": "6.0.3"
+  }
+}

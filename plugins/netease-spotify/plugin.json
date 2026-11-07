@@ -1,0 +1,30 @@
+{
+  "id": "netease-spotify",
+  "name": "NetEase + Spotify",
+  "version": "0.1.0",
+  "minAppVersion": "0.1.20",
+  "main": "index.js",
+  "playback": "stream",
+  "permissions": {
+    "network": ["music.163.com", "interfacepc.music.163.com"]
+  },
+  "settings": [
+    {
+      "key": "ne.quality",
+      "label": "NetEase Quality Override",
+      "help": "Leave empty to follow the player. Options: standard / higher / exhigh / lossless / hires. Your account must have access to the requested quality."
+    },
+    {
+      "key": "ne.loginMethod",
+      "label": "NetEase Sign-in Method",
+      "help": "Leave empty or use qr for QR sign-in; use web for website sign-in. Sessions are stored in the host's plugin data files, not the system keychain."
+    }
+  ],
+  "navigation": [
+    { "title": "For You", "builtin": "home", "icon": "home" },
+    { "title": "Daily Recommendations", "page": "ne:daily", "icon": "calendar" },
+    { "title": "Personal FM", "builtin": "stations", "icon": "radio" },
+    { "title": "Charts", "page": "ne:charts", "icon": "chart" },
+    { "title": "Podcasts", "page": "ne:podcasts", "icon": "podcast" }
+  ]
+}
