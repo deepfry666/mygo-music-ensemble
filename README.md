@@ -9,7 +9,18 @@
 
 进度和设计见 [PLAN.md](PLAN.md)。
 
-## 构建和安装
+## 安装 Duet
+
+需要 MyGo Music 0.1.20 或更新的版本。
+
+- 一键安装：[mygo-music://install-plugin?repo=deepfry666/mygo-music-ensemble](mygo-music://install-plugin?repo=deepfry666/mygo-music-ensemble)
+- 或者在 MyGo Music 的 设置 > 插件 > + 里粘贴仓库地址：`https://github.com/deepfry666/mygo-music-ensemble`
+
+app 会下载最新 Release 里的 `duet.zip`，安装前会先征得你的同意。装好后，在音源里选 **二重奏**，点 **登录**，用网易云音乐 App 扫码。
+
+目前只能用网易云部分，Spotify 还在接入中。
+
+## 从源码构建
 
 需要 Node 24+ 和 pnpm。
 
@@ -18,7 +29,19 @@ pnpm install
 pnpm build
 ```
 
-构建结果在 `dist/duet/`。安装方法：在 MyGo Music 里打开 设置 > 插件 > +，选“从这台电脑的文件夹安装”，选这个文件夹。
+构建结果在 `dist/duet/`。要装本地构建的版本：在 MyGo Music 里打开 设置 > 插件 > +，选“从这台电脑的文件夹安装”，选这个文件夹。
+
+## 发布新版本
+
+1. 改 `package.json` 和 `plugins/duet/plugin.json` 里的版本号，两处保持一致。
+2. 运行 `pnpm package`：会先跑全部测试，再打出 `dist/release/duet.zip`。
+3. 提交并推送，然后发 Release：
+
+```bash
+gh release create v<版本号> dist/release/duet.zip --title "Duet <版本号>"
+```
+
+不要发成 prerelease：app 只认 GitHub 的“latest”正式版，prerelease 不算。
 
 ## 测试
 

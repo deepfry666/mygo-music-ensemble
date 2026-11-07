@@ -9,7 +9,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "test:netease": "PLUGIN_DIR=dist/netease node --test 'packages/netease/tests/*.test.ts'",
     "test:duet": "PLUGIN_DIR=dist/duet node --test 'plugins/duet/tests/*.test.ts'",
-    "test": "pnpm build && pnpm test:netease && pnpm test:duet"
+    "test": "pnpm build && pnpm test:netease && pnpm test:duet",
+    "package": "pnpm test && node scripts/package.ts"
   },
   "engines": { "node": ">=24" },
   "devDependencies": {
