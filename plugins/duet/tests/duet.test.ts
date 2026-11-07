@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 deepfry666
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// The NetEase + Spotify plugin, as built: IDs and pages carry their platform,
+// Duet, the NetEase + Spotify plugin, as built: IDs and pages carry their platform,
 // and the NetEase package keeps its storage and settings under "ne.".
-// Run with PLUGIN_DIR=dist/netease-spotify.
+// Run with PLUGIN_DIR=dist/duet.
 
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";

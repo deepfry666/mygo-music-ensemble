@@ -1,4 +1,6 @@
-# 规划：网易云 + Spotify 双平台插件（MyGo Music）
+# 规划：Duet（二重奏）与 Ferry（渡）
+
+仓库 Ensemble（合奏）。Duet 是网易云 + Spotify 的双平台插件；Ferry 是歌单同步，做在 Duet 里面。
 
 > 状态：第 1 阶段（网易云部分）代码已完成，还没在 app 里实际试过。基于 egoist/mygo-music 0.1.20（2026-11-07）。
 >
@@ -53,7 +55,7 @@
 - 自动：歌单加入自动同步列表，设置里填间隔（分钟）。插件运行时用定时器检查，有新增就补过去。
 - 第一次同步在 Spotify 建同名歌单，之后增量补歌，不重复建歌单。
 - 匹配不上的歌记进“同步记录”页。
-- 代码放在 `packages/sync`，以后想单独发布成插件也方便。
+- 代码放在 `packages/ferry`，以后想单独发布成插件也方便。
 
 ## 仓库结构
 
@@ -62,9 +64,9 @@ packages/
   netease-api/   eapi 加密、扫码登录、搜索、歌单、歌词、播放地址、评论
   spotify-api/   登录（官方 OAuth 和/或网页 cookie）、token 刷新、搜索、歌单读写
   match/         跨平台歌曲匹配与缓存
-  sync/          同步任务、增量、记录
+  ferry/         Ferry：同步任务、增量、记录
 plugins/
-  duo/           双平台插件（plugin.json + src/index.ts）
+  duet/          Duet 双平台插件（plugin.json + src/index.ts）
 scripts/build.ts bun build 打成单文件 → dist/<插件>/
 ```
 

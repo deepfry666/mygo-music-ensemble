@@ -5,8 +5,8 @@
 // Builds each plugin into dist/<name>/: one self-contained JavaScript module,
 // as MyGo Music loads it, with its plugin.json, translations and licence.
 //
-//   dist/netease/          the NetEase package alone, which its tests run on
-//   dist/netease-spotify/  the NetEase + Spotify plugin, to install
+//   dist/netease/  the NetEase package alone, which its tests run on
+//   dist/duet/     Duet (NetEase + Spotify), to install
 
 import { build } from "esbuild";
 import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
@@ -33,10 +33,10 @@ const targets: Target[] = [
     exports: "packages/netease/tests/fixtures/exports.json",
   },
   {
-    name: "netease-spotify",
-    entry: "plugins/netease-spotify/src/index.ts",
-    manifest: "plugins/netease-spotify/plugin.json",
-    locales: ["packages/netease/locales/zh-CN.json", "plugins/netease-spotify/locales/zh-CN.json"],
+    name: "duet",
+    entry: "plugins/duet/src/index.ts",
+    manifest: "plugins/duet/plugin.json",
+    locales: ["packages/netease/locales/zh-CN.json", "plugins/duet/locales/zh-CN.json"],
     define: { __NETEASE_NS__: JSON.stringify("ne.") },
   },
 ];

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 deepfry666
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// NetEase Cloud Music and Spotify in one plugin, side by side: each keeps its
+// Duet: NetEase Cloud Music and Spotify in one plugin, side by side: each keeps its
 // own playlists, picks and likes, and a song plays from where it came from.
 // IDs and pages carry their platform ("ne:", "sp:"), see packages/core.
 //

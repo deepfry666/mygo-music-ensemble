@@ -1,5 +1,5 @@
 {
-  "name": "mygo-netease-spotify",
+  "name": "mygo-ensemble",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,8 +8,8 @@
     "build": "node scripts/build.ts",
     "typecheck": "tsc -p tsconfig.json",
     "test:netease": "PLUGIN_DIR=dist/netease node --test 'packages/netease/tests/*.test.ts'",
-    "test:duo": "PLUGIN_DIR=dist/netease-spotify node --test 'plugins/netease-spotify/tests/*.test.ts'",
-    "test": "pnpm build && pnpm test:netease && pnpm test:duo"
+    "test:duet": "PLUGIN_DIR=dist/duet node --test 'plugins/duet/tests/*.test.ts'",
+    "test": "pnpm build && pnpm test:netease && pnpm test:duet"
   },
   "engines": { "node": ">=24" },
   "devDependencies": {
