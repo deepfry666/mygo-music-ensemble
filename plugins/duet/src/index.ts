@@ -12,6 +12,7 @@ import { Platforms, fail, platformOf, tag, untag } from "../../../packages/core/
 import * as netease from "../../../packages/netease/src/index.ts";
 import { connected as spotifyConnected } from "../../../packages/spotify/src/auth.ts";
 import * as spotify from "../../../packages/spotify/src/index.ts";
+import { connectLink, fresh, statusText } from "../../../packages/spotify/src/index.ts";
 import { onNetEase, onSpotify } from "./cross.ts";
 
 const platforms = new Platforms({ ne: netease, sp: spotify });
@@ -34,11 +35,41 @@ async function accounts() {
   return { ne, sp };
 }
 
+// The account is NetEase's, with Spotify's name after it once that's signed
+// in too. Its page, My Page in the account menu, is where either signs in or
+// out: once one is signed in, the app no longer offers to sign in.
 export async function account() {
   const { ne, sp } = await accounts();
-  if (ne && sp) return { ...ne, name: `${ne.name} · ${sp.name}` };
-  return ne ?? sp;
+  const one = ne ?? sp;
+  if (!one) return null;
+  return { ...one, name: ne && sp ? `${ne.name} · ${sp.name}` : one.name, page: "duet:accounts" };
 }
+
+async function accountsPage() {
+  const { ne, sp } = await accounts();
+  const spotifyLinks = sp
+    ? [
+        { title: sp.name, subtitle: t("Your Spotify"), imageUrl: sp.imageUrl, page: tag("sp", fresh("home")) },
+        { title: t("Sign out of Spotify"), subtitle: t("NetEase stays signed in"), page: tag("sp", fresh("signout")) },
+      ]
+    : host.setting("sp.clientId")
+      ? [tagLink(connectLink())]
+      : [];
+  return {
+    title: t("Accounts"),
+    sections: [
+      {
+        title: t("NetEase Cloud Music"),
+        links: ne ? [{ title: ne.name, subtitle: t("Your NetEase page"), imageUrl: ne.imageUrl, page: "ne:profile" }] : [],
+        empty: t("Not signed in: sign out, then sign in again to scan the QR code"),
+      },
+      { title: "Spotify", links: spotifyLinks, empty: statusText() || t("Not signed in to Spotify yet.") },
+    ],
+    description: sp ? "" : statusText(),
+  };
+}
+
+const tagLink = (link: { title: string; subtitle?: string; page: string }) => ({ ...link, page: tag("sp", link.page) });
 
 export async function signIn() {
   if (!(await platforms.call("ne", "account"))) await platforms.call("ne", "signIn");
@@ -52,6 +83,7 @@ export async function signOut() {
 }
 
 // Settings are kept as "<platform>.<key>", as plugin.json names them.
+// A Spotify Client ID filled in starts signing in to Spotify, in the browser.
 export function setSetting({ key, value }: { key: string; value: string }) {
   const [platform, ...rest] = key.split(".");
   if (!rest.length || !platforms.can(platform, "setSetting")) return;
@@ -197,7 +229,11 @@ export async function addToPlaylist({ id, trackIds }: { id: string; trackIds: st
 
 // Everything else that names a song, album, artist, playlist or page goes to
 // the platform it's of.
-export const browse = platforms.byID("browse");
+const platformBrowse = platforms.byID("browse");
+export function browse({ page }: { page: string }) {
+  if (page.split("?")[0] === "duet:accounts") return accountsPage();
+  return platformBrowse({ page });
+}
 export const album = platforms.byID("album");
 export const artist = platforms.byID("artist");
 export const followArtist = platforms.byID("followArtist");

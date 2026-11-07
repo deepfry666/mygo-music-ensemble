@@ -4,7 +4,7 @@
 
 | 插件 | 中文名 | 是什么 | 状态 |
 |---|---|---|---|
-| **Duet** | 二重奏 | 一个插件里同时用网易云音乐和 Spotify。两边的歌单、推荐、喜欢的歌并排放着，不合并，想听哪边就点哪边，不用切换音源 | 网易云和 Spotify 都已接入（0.2.0） |
+| **Duet** | 二重奏 | 一个插件里同时用网易云音乐和 Spotify。两边的歌单、推荐、喜欢的歌并排放着，不合并，想听哪边就点哪边，不用切换音源 | 网易云和 Spotify 都已接入（0.2.1） |
 | **Ferry** | 渡 | 把歌单摆渡到另一个平台，先做网易云 → Spotify，支持手动和自动同步。作为 Duet 的一部分，和它共用登录 | 计划中 |
 
 进度和设计见 [PLAN.md](PLAN.md)。
@@ -23,8 +23,8 @@ app 会下载最新 Release 里的 `duet.zip`，安装前会先征得你的同�
 Spotify 只能通过它的官方 API 接入，需要你自己建一个开发者 App：
 
 1. 用 Premium 账号登录 [Spotify 开发者后台](https://developer.spotify.com/dashboard)，点 **Create app**。名称和描述随便填，Redirect URI 填 `http://127.0.0.1:43110/callback`（必须一字不差），勾选 **Web API**，保存。
-2. 复制这个 App 的 **Client ID**，粘贴到 MyGo Music 里 二重奏 插件设置的 **Spotify Client ID** 一栏。
-3. 打开侧边栏的 **Spotify** 页，点 **连接 Spotify**，在浏览器里批准授权，再回到 app 点 **打开 Spotify**。还没登录网易云的话，直接点 **登录**，会先扫网易云的码，再打开 Spotify 授权页。
+2. 复制这个 App 的 **Client ID**，粘贴到 MyGo Music 里 二重奏 插件设置的 **Spotify Client ID** 一栏。填好后浏览器会自动打开 Spotify 授权页，点同意即可。
+3. 浏览器没打开，或者被你关掉了？点左下角的账号 → **我的主页**，那里能看到网易云和 Spotify 两边的登录状态，点 **连接 Spotify** 会重新打开授权页。退出 Spotify 也在这里，不影响网易云的登录。
 
 开发模式的 App 只允许创建者本人，以及在后台 User Management 里加进去的账号（最多 5 个）登录。
 

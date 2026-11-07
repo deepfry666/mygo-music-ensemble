@@ -9,7 +9,7 @@
 // made or collaborates on, and gives it no recommendations or radio.
 
 import { call, pages, SpotifyError, type Paging } from "./api.ts";
-import { authorize, connected, endSession, hasSession } from "./auth.ts";
+import { authorize, connect, connectStatus, connected, endSession, hasSession } from "./auth.ts";
 import { fail, setting, storage, t } from "./env.ts";
 import {
   albumOf,
@@ -77,44 +77,59 @@ export function signOut() {
   endSession();
 }
 
-export function setSetting({ key }: { key: string }) {
-  // A session is of one app: another Client ID needs signing in again.
-  if (key === "clientId") endSession();
+// A session is of one app: another Client ID needs signing in again, which
+// starts at once, in the browser.
+export function setSetting({ key, value }: { key: string; value: string }) {
+  if (key !== "clientId") return;
+  endSession();
+  if (value.trim()) connect();
 }
 
-// Pages of the plugin's own: "home", and "connect", which starts signing in.
+// Pages of the plugin's own: "home"; "connect", which starts signing in and
+// says to approve it in the browser; and "signout". Their routes carry a
+// number, as the app keeps a page it has loaded by its route.
 
-let lastError = "";
+export const fresh = (page: string) => `${page}?n=${Date.now()}`;
 
-function connectLink() {
-  return { title: t("Connect Spotify"), subtitle: t("Opens Spotify in your browser to approve"), page: `connect?n=${Date.now()}` };
+export function connectLink() {
+  return { title: t("Connect Spotify"), subtitle: t("Opens Spotify in your browser to approve"), page: fresh("connect") };
+}
+
+// statusText says what's in the way of using Spotify, or "" for nothing.
+export function statusText() {
+  if (!setting("clientId")) {
+    return t("To use Spotify, paste the Client ID of your Spotify app in this plugin's settings: your browser then opens for you to approve.");
+  }
+  if (connected()) return "";
+  const s = connectStatus();
+  if (s.state === "waiting") return t("Waiting for you to approve in the browser. Approved already? Open Spotify again.");
+  if (s.state === "failed") return t("Signing in to Spotify didn't work: {message}", { message: s.message });
+  return t("Not signed in to Spotify yet.");
 }
 
 export async function browse({ page }: { page: string }) {
   const [name] = page.split("?");
   if (name === "connect") {
     if (!setting("clientId")) throw fail("setup", t("Paste the Client ID of your Spotify app in the plugin's settings first"));
-    lastError = "";
-    authorize().catch((e) => (lastError = e instanceof Error ? e.message : String(e)));
+    if (!connected()) connect();
     return {
       title: t("Connect Spotify"),
-      description: t("Approve access in the browser window that opened, then come back and open Spotify."),
-      sections: [{ links: [{ title: t("Open Spotify"), page: `home?n=${Date.now()}` }] }],
+      description: connected()
+        ? t("Signed in to Spotify.")
+        : t("Approve access in the browser window that opened, then come back and open Spotify."),
+      sections: [{ links: [{ title: t("Open Spotify"), page: fresh("home") }, connectLink()] }],
     };
+  }
+  if (name === "signout") {
+    endSession();
+    return { title: "Spotify", description: t("Signed out of Spotify."), sections: [{ links: [connectLink()] }] };
   }
   if (name !== "home") throw fail("unavailable", t("No such page"));
   if (!connected()) {
     return {
       title: "Spotify",
-      description: [
-        setting("clientId")
-          ? t("Not signed in to Spotify yet.")
-          : t("Paste the Client ID of your Spotify app in the plugin's settings first"),
-        lastError,
-      ]
-        .filter(Boolean)
-        .join("\n"),
-      sections: [{ links: [connectLink()] }],
+      description: statusText(),
+      sections: setting("clientId") ? [{ links: [connectLink(), { title: t("Open Spotify"), page: fresh("home") }] }] : [],
     };
   }
   const [recent, top, artists, albums, lists] = await Promise.allSettled([

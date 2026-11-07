@@ -55,7 +55,7 @@ test("the NetEase session is kept under ne., and only there", async () => {
   );
   const me = await h.plugin.account();
   assert.equal(me?.id, "ne:7");
-  assert.equal(me?.page, "ne:profile");
+  assert.equal(me?.page, "duet:accounts");
   assert.equal(h.state.has("account"), false);
 });
 

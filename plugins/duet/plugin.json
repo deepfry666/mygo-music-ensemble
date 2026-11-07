@@ -1,7 +1,7 @@
 {
   "id": "duet",
   "name": "Duet",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "minAppVersion": "0.1.20",
   "main": "index.js",
   "playback": "stream",
@@ -27,7 +27,7 @@
     {
       "key": "sp.clientId",
       "label": "Spotify Client ID",
-      "help": "Create an app in Spotify's developer dashboard with the redirect URI http://127.0.0.1:43110/callback and Web API ticked, then paste its Client ID here. The app's owner needs Premium.",
+      "help": "Create an app in Spotify's developer dashboard with the redirect URI http://127.0.0.1:43110/callback and Web API ticked, then paste its Client ID here: your browser opens for you to approve. The app's owner needs Premium.",
       "link": "https://developer.spotify.com/dashboard"
     }
   ],

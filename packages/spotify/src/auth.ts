@@ -113,12 +113,36 @@ function randomString(length: number) {
 }
 
 let pending: Promise<void> | null = null;
+let pendingURL = "";
 
 // authorize has the listener approve the app in their browser, and keeps the
-// session Spotify answers with. One runs at a time.
+// session Spotify answers with. One runs at a time: asked again meanwhile, it
+// opens the page again, as the listener may have closed it.
 export function authorize() {
-  pending ||= run().finally(() => (pending = null));
+  if (pending) {
+    if (pendingURL) browser.openURL(pendingURL);
+    return pending;
+  }
+  pending = run().finally(() => {
+    pending = null;
+    pendingURL = "";
+  });
   return pending;
+}
+
+// How the last sign-in that nothing waited for went, for the pages to say.
+export type Status = { state: "idle" } | { state: "waiting" } | { state: "failed"; message: string };
+let status: Status = { state: "idle" };
+export const connectStatus = () => (pending ? ({ state: "waiting" } as Status) : status);
+
+// connect starts signing in without waiting for it, as a page or a setting
+// asks: the listener approves in the browser and comes back.
+export function connect() {
+  status = { state: "idle" };
+  authorize().then(
+    () => (status = { state: "idle" }),
+    (e) => (status = { state: "failed", message: e instanceof Error ? e.message : String(e) }),
+  );
 }
 
 async function run() {
@@ -143,7 +167,8 @@ async function run() {
     code_challenge: base64url(sha256(new TextEncoder().encode(verifier))),
   });
   host.signInPrompt({ text: t("Approve access to Spotify in your browser") });
-  browser.openURL(`${ACCOUNTS}/authorize?${query}`);
+  pendingURL = `${ACCOUNTS}/authorize?${query}`;
+  browser.openURL(pendingURL);
   const answer = await back;
   if (answer.state !== state) throw new Error(t("That Spotify sign-in wasn't this one: try again"));
   if (answer.error) {

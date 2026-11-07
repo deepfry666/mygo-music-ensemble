@@ -3,7 +3,6 @@
   "NetEase Quality Override": "网易云音质覆盖",
   "NetEase Sign-in Method": "网易云登录方式",
   "Spotify Client ID": "Spotify Client ID",
-  "Create an app in Spotify's developer dashboard with the redirect URI http://127.0.0.1:43110/callback and Web API ticked, then paste its Client ID here. The app's owner needs Premium.": "在 Spotify 开发者后台创建一个 App，Redirect URI 填 http://127.0.0.1:43110/callback 并勾选 Web API，然后把它的 Client ID 粘贴到这里。创建 App 的账号需要 Premium。",
   "Paste the Client ID of your Spotify app in the plugin's settings first": "请先在插件设置里填入你的 Spotify App 的 Client ID",
   "Sign in to Spotify first": "请先登录 Spotify",
   "Your Spotify session has ended: sign in again": "Spotify 登录已失效，请重新登录",
@@ -33,5 +32,17 @@
   "Your Spotify": "你的 Spotify",
   "Recently played, top tracks and playlists": "最近播放、常听的歌和歌单",
   "This song isn't on NetEase Cloud Music, so it can't be played here": "网易云音乐上没有找到这首歌，暂时无法播放",
-  "Added {added}; {missing} couldn't be found on {where}": "已添加 {added} 首，另有 {missing} 首在{where}上没有找到"
+  "Added {added}; {missing} couldn't be found on {where}": "已添加 {added} 首，另有 {missing} 首在{where}上没有找到",
+  "Create an app in Spotify's developer dashboard with the redirect URI http://127.0.0.1:43110/callback and Web API ticked, then paste its Client ID here: your browser opens for you to approve. The app's owner needs Premium.": "在 Spotify 开发者后台创建一个 App，Redirect URI 填 http://127.0.0.1:43110/callback 并勾选 Web API，然后把它的 Client ID 粘贴到这里：浏览器会自动打开，请在 Spotify 页面上点同意。创建 App 的账号需要 Premium。",
+  "To use Spotify, paste the Client ID of your Spotify app in this plugin's settings: your browser then opens for you to approve.": "要使用 Spotify，请在本插件的设置里填入你的 Spotify App 的 Client ID，填好后浏览器会自动打开授权页。",
+  "Waiting for you to approve in the browser. Approved already? Open Spotify again.": "正在等你在浏览器里批准授权。已经批准了？再点一次“打开 Spotify”。",
+  "Signing in to Spotify didn't work: {message}": "Spotify 登录没有成功：{message}",
+  "Signed in to Spotify.": "已登录 Spotify。",
+  "Signed out of Spotify.": "已退出 Spotify。",
+  "Accounts": "账号",
+  "NetEase Cloud Music": "网易云音乐",
+  "Your NetEase page": "你的网易云主页",
+  "Sign out of Spotify": "退出 Spotify",
+  "NetEase stays signed in": "网易云保持登录",
+  "Not signed in: sign out, then sign in again to scan the QR code": "未登录：先退出登录，再点登录扫码"
 }

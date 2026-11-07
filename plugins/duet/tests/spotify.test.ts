@@ -71,8 +71,9 @@ test("without a Client ID, Duet is NetEase alone and Spotify's page says what to
   }, { storage: neSignedIn });
   const lists = (await h.plugin.playlists()) as { id: string }[];
   assert.ok(lists.every((p) => p.id.startsWith("ne:")));
-  const page = (await h.plugin.browse({ page: "sp:home" })) as { sections: { links: { page: string }[] }[] };
-  assert.match(page.sections[0].links[0].page, /^sp:connect\?/);
+  const page = (await h.plugin.browse({ page: "sp:home" })) as { description: string; sections: unknown[] };
+  assert.match(page.description, /Client ID/);
+  assert.equal(page.sections.length, 0);
   await assert.rejects(h.plugin.browse({ page: "sp:connect" }), { code: "setup" });
   await assert.rejects(h.plugin.search({ query: "sp: 晴天", kind: "tracks", offset: 0 }), { code: "signIn" });
 });
@@ -293,4 +294,90 @@ test("Spotify hearts are asked of Spotify, NetEase's of NetEase", async () => {
     "sp:b": false,
     "ne:201": true,
   });
+});
+
+// Signing in to Spotify once NetEase is: the app offers no Sign In then.
+
+function browserMock(h: { host: unknown }) {
+  const host = h.host as Record<string, unknown>;
+  const opened: string[] = [];
+  let waits = 0;
+  let redirected: (q: Record<string, string>) => void = () => {};
+  host.waitForRedirect = () => {
+    waits++;
+    return new Promise((resolve) => (redirected = resolve));
+  };
+  host.openURL = (address: string) => opened.push(address);
+  const approve = () => {
+    const url = new URL(opened.at(-1)!);
+    redirected({ code: "the-code", state: url.searchParams.get("state")! });
+  };
+  return { opened, waits: () => waits, approve };
+}
+
+const spotifyAccounts = (call: Call) => {
+  if (call.url.hostname === "accounts.spotify.com") {
+    return json({ access_token: "access-1", refresh_token: "refresh-1", expires_in: 3600 });
+  }
+  if (call.path === "/v1/me") return json({ id: "me", display_name: "Spotify User", images: [] });
+  return netease(call);
+};
+
+test("filling in the Client ID opens Spotify's approval in the browser, at once", async () => {
+  const s = { ...settings };
+  const h = await harness(spotifyAccounts, { storage: neSignedIn, settings: s });
+  const b = browserMock(h);
+  h.plugin.setSetting({ key: "sp.clientId", value: "client-1" });
+  assert.equal(b.opened.length, 1);
+  assert.match(b.opened[0], /^https:\/\/accounts\.spotify\.com\/authorize\?.*client_id=client-1/);
+  // Asked again while it waits, as the browser's page was closed: opened again, still one sign-in.
+  const page = (await h.plugin.browse({ page: "sp:connect?n=1" })) as { description: string };
+  assert.match(page.description, /browser/);
+  assert.equal(b.opened.length, 2);
+  assert.equal(b.waits(), 1);
+  b.approve();
+  await new Promise((r) => setTimeout(r, 10));
+  assert.equal((h.state.get("sp.session") as { access: string }).access, "access-1");
+  const me = (await h.plugin.account()) as { name: string; page: string };
+  assert.equal(me.name, "网易用户 · Spotify User");
+  assert.equal(me.page, "duet:accounts");
+});
+
+test("My Page lists both accounts, and how to sign in to Spotify or out of it", async () => {
+  type Page = { sections: { title: string; links: { title: string; page: string }[]; empty: string }[] };
+  const none = await harness(netease, { storage: neSignedIn });
+  const a = (await none.plugin.browse({ page: "duet:accounts" })) as Page;
+  assert.equal(a.sections[0].links[0].page, "ne:profile");
+  assert.equal(a.sections[1].links.length, 0);
+  assert.match(a.sections[1].empty, /Client ID/);
+
+  const ready = await harness(netease, { storage: neSignedIn, settings });
+  const b = (await ready.plugin.browse({ page: "duet:accounts" })) as Page;
+  assert.match(b.sections[1].links[0].page, /^sp:connect\?n=\d+$/);
+
+  const both = await harness(netease, { storage: { ...neSignedIn, ...spSignedIn }, settings });
+  const c = (await both.plugin.browse({ page: "duet:accounts" })) as Page;
+  assert.deepEqual(
+    c.sections[1].links.map((l) => l.page.replace(/\d+$/, "")),
+    ["sp:home?n=", "sp:signout?n="],
+  );
+  await both.plugin.browse({ page: c.sections[1].links[1].page });
+  assert.equal(both.state.has("sp.session"), false);
+  assert.ok(both.state.has("ne.cookies"), "signing out of Spotify signed out of NetEase too");
+});
+
+test("a sign-in Spotify turns down says so on the Spotify page", async () => {
+  const h = await harness(
+    (call) => {
+      if (call.url.hostname === "accounts.spotify.com") return json({ error: "invalid_client", error_description: "Invalid client" }, 400);
+      return netease(call);
+    },
+    { storage: neSignedIn, settings },
+  );
+  const b = browserMock(h);
+  await h.plugin.browse({ page: "sp:connect?n=1" });
+  b.approve();
+  await new Promise((r) => setTimeout(r, 10));
+  const page = (await h.plugin.browse({ page: "sp:home?n=2" })) as { description: string };
+  assert.match(page.description, /didn't work: Invalid client/);
 });
