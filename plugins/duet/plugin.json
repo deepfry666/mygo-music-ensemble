@@ -1,7 +1,7 @@
 {
   "id": "duet",
   "name": "Duet",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "minAppVersion": "0.1.20",
   "main": "index.js",
   "playback": "stream",
@@ -43,11 +43,6 @@
       "icon": "calendar"
     },
     {
-      "title": "Spotify",
-      "page": "sp:home",
-      "icon": "star"
-    },
-    {
       "title": "Personal FM",
       "builtin": "stations",
       "icon": "radio"
@@ -61,6 +56,11 @@
       "title": "Podcasts",
       "page": "ne:podcasts",
       "icon": "podcast"
+    },
+    {
+      "title": "Spotify",
+      "page": "sp:home",
+      "icon": "star"
     }
   ]
 }

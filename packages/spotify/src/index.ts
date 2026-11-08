@@ -157,7 +157,7 @@ export async function browse({ page }: { page: string }) {
       },
       { title: t("Your Top Artists"), artists: (ok(artists)?.items || []).map(artistOf).filter(Boolean) },
       { title: t("Saved Albums"), albums: (ok(albums)?.items || []).map((i) => albumOf(i.album)).filter(Boolean) },
-      { title: t("Your Spotify Playlists"), playlists: ok(lists) || [] },
+      { title: t("Your Playlists"), playlists: ok(lists) || [] },
     ],
   };
 }
@@ -225,7 +225,7 @@ export async function isLiked({ ids }: { ids: string[] }) {
 
 export const like = ({ id, on }: { id: string; on: boolean }) => setSaved(trackURI(id), on);
 
-const likedPlaylist = (): Playlist => ({ id: LIKED, name: t("Spotify Liked Songs"), mine: true, fixed: true });
+const likedPlaylist = (): Playlist => ({ id: LIKED, name: t("Liked songs"), mine: true, fixed: true });
 
 export async function playlists() {
   const lists = await pages("/me/playlists", { limit: 50 }, playlistOf, 10);

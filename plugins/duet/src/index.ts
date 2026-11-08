@@ -90,18 +90,8 @@ export function setSetting({ key, value }: { key: string; value: string }) {
   return platforms.get(platform).setSetting!({ key: rest.join("."), value });
 }
 
-// Home is NetEase's, its daily songs first, and what Spotify has on its own page.
-export async function home() {
-  const page = (await platforms.call("ne", "home")) as { sections?: unknown[] };
-  if (!spotifyReady()) return page;
-  return {
-    ...page,
-    sections: [
-      ...(page.sections ?? []),
-      { title: "Spotify", links: [{ title: t("Your Spotify"), subtitle: t("Recently played, top tracks and playlists"), page: "sp:home" }] },
-    ],
-  };
-}
+// Home is NetEase's, its daily songs first. Spotify's is a page of its own.
+export const home = () => platforms.call("ne", "home");
 
 // Search finds on both, NetEase's first, unless the query starts with "sp:"
 // or "ne:" for one of them. Each keeps its own place in the pages that follow.
@@ -148,7 +138,7 @@ export const createPlaylist = onNE("createPlaylist");
 export const stations = onNE("stations");
 export const shows = onNE("shows");
 
-// Both platforms' playlists, Spotify's marked as such.
+// Both platforms' playlists, as each names them: NetEase's first, then Spotify's.
 export async function playlists() {
   const ne = (await platforms.call("ne", "playlists")) as unknown[];
   if (!spotifyReady()) return ne;
@@ -158,7 +148,7 @@ export async function playlists() {
   } catch {
     // NetEase's still list while Spotify can't be reached.
   }
-  return [...ne, ...sp.map((p) => ({ ...p, name: `${p.name} · Spotify` }))];
+  return [...ne, ...sp];
 }
 
 export async function isLiked({ ids }: { ids: string[] }) {

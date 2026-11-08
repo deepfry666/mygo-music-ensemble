@@ -7,7 +7,8 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
-import { harness, type Call } from "../../../packages/netease/tests/harness.ts";
+import { readFile } from "node:fs/promises";
+import { harness, pluginDirectory, type Call } from "../../../packages/netease/tests/harness.ts";
 
 const neSignedIn = {
   "ne.account": { id: "7", name: "网易用户" },
@@ -146,7 +147,7 @@ test("an expired Spotify token is refreshed once and kept", async () => {
   assert.equal(s.refresh, "refresh-1");
 });
 
-test("both platforms' playlists are listed, Spotify's marked, its liked songs fixed", async () => {
+test("both platforms' playlists are listed as each names them, NetEase's first, Spotify's liked songs fixed", async () => {
   const h = await harness(
     (call) => {
       if (call.path === "/v1/me/playlists") {
@@ -164,13 +165,14 @@ test("both platforms' playlists are listed, Spotify's marked, its liked songs fi
   );
   const lists = (await h.plugin.playlists()) as { id: string; name: string; mine?: boolean; fixed?: boolean }[];
   const sp = lists.filter((p) => p.id.startsWith("sp:"));
-  assert.ok(lists.some((p) => p.id.startsWith("ne:")));
+  assert.ok(lists[0].id.startsWith("ne:"));
+  assert.ok(lists.findIndex((p) => p.id.startsWith("sp:")) > lists.findLastIndex((p) => p.id.startsWith("ne:")));
   assert.deepEqual(
     sp.map((p) => [p.id, p.name, Boolean(p.mine), Boolean(p.fixed)]),
     [
-      ["sp:liked", "Spotify Liked Songs · Spotify", true, true],
-      ["sp:p1", "Road Trip · Spotify", true, false],
-      ["sp:p2", "Someone's · Spotify", false, false],
+      ["sp:liked", "Liked songs", true, true],
+      ["sp:p1", "Road Trip", true, false],
+      ["sp:p2", "Someone's", false, false],
     ],
   );
 });
@@ -380,4 +382,22 @@ test("a sign-in Spotify turns down says so on the Spotify page", async () => {
   await new Promise((r) => setTimeout(r, 10));
   const page = (await h.plugin.browse({ page: "sp:home?n=2" })) as { description: string };
   assert.match(page.description, /didn't work: Invalid client/);
+});
+
+test("Home is NetEase's alone, and the sidebar lists NetEase's pages before Spotify's", async () => {
+  const h = await harness(
+    (call) => {
+      assert.notEqual(call.url.hostname, "api.spotify.com", "Home asked Spotify");
+      if (call.path === "/api/personalized/playlist") return { result: [] };
+      return netease(call) ?? {};
+    },
+    { storage: { ...neSignedIn, ...spSignedIn }, settings },
+  );
+  const page = (await h.plugin.home()) as { sections?: { title?: string }[] };
+  assert.ok(!(page.sections ?? []).some((s) => s.title === "Spotify"));
+  const manifest = JSON.parse(await readFile(`${pluginDirectory}/plugin.json`, "utf8"));
+  const platformsInOrder = manifest.navigation
+    .map((n: { page?: string }) => (n.page?.startsWith("sp:") ? "sp" : "ne"))
+    .join("");
+  assert.match(platformsInOrder, /^(ne)+(sp)+$/);
 });

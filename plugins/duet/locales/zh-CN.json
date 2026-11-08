@@ -25,12 +25,9 @@
   "Your Top Tracks": "你常听的歌",
   "Your Top Artists": "你常听的艺人",
   "Saved Albums": "收藏的专辑",
-  "Your Spotify Playlists": "你的 Spotify 歌单",
-  "Spotify Liked Songs": "Spotify 喜欢的歌曲",
   "Spotify only lets this app open playlists you made or collaborate on": "Spotify 只允许这个 App 打开你自己创建或参与协作的歌单",
   "Use song hearts to change your liked songs": "请用红心来增减喜欢的歌曲",
   "Your Spotify": "你的 Spotify",
-  "Recently played, top tracks and playlists": "最近播放、常听的歌和歌单",
   "This song isn't on NetEase Cloud Music, so it can't be played here": "网易云音乐上没有找到这首歌，暂时无法播放",
   "Added {added}; {missing} couldn't be found on {where}": "已添加 {added} 首，另有 {missing} 首在{where}上没有找到",
   "Create an app in Spotify's developer dashboard with the redirect URI http://127.0.0.1:43110/callback and Web API ticked, then paste its Client ID here: your browser opens for you to approve. The app's owner needs Premium.": "在 Spotify 开发者后台创建一个 App，Redirect URI 填 http://127.0.0.1:43110/callback 并勾选 Web API，然后把它的 Client ID 粘贴到这里：浏览器会自动打开，请在 Spotify 页面上点同意。创建 App 的账号需要 Premium。",
@@ -44,5 +41,7 @@
   "Your NetEase page": "你的网易云主页",
   "Sign out of Spotify": "退出 Spotify",
   "NetEase stays signed in": "网易云保持登录",
-  "Not signed in: sign out, then sign in again to scan the QR code": "未登录：先退出登录，再点登录扫码"
+  "Not signed in: sign out, then sign in again to scan the QR code": "未登录：先退出登录，再点登录扫码",
+  "Liked songs": "已点赞的歌曲",
+  "Your Playlists": "你的歌单"
 }

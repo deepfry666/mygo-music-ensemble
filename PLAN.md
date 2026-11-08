@@ -18,7 +18,7 @@
 | 事实 | 影响 |
 |---|---|
 | 插件之间完全隔离：登录、存储都不共享，插件也不能互相调用 | 同步功能做进双平台插件最省事，单独做插件就得再登录一遍 |
-| 一个插件只能选一种 `playback`：`stream`（app 播放）或 `remote`（遥控外部设备） | 网易云适合 `stream`；Spotify 原声只能走 Connect，也就是 `remote` |
+| 一个插件只能选一种 `playback`：`stream`（app 播放）或 `remote`（遥控外部设备） | 网易云适合 `stream`；Spotify 原声只能走 Connect，也就是 `remote`。已提 [egoist/mygo-music#75](https://github.com/egoist/mygo-music/issues/75) 按歌曲选择，等作者确认 |
 | `signIn` 有 5 分钟，其他调用只有 30 秒 | 两个平台的登录都要在 `signIn` 里完成；同步要在后台跑，进度存进 storage |
 | `liked`、`playlists`、`home`、`search`、`stations` 都只有一个导出 | 两个平台的内容要在函数内部按 ID 前缀分发，内置页面会混放两边的内容 |
 | app 的“添加到歌单”菜单列出插件所有 `mine` 歌单 | 在网易云的歌上可以直接选 Spotify 的歌单，跨平台添加用 app 自带菜单就能做 |
@@ -36,10 +36,10 @@
 **ID 规则**：`ne:<id>` 表示网易云，`sp:<id>` 表示 Spotify。所有导出函数都按前缀分发到对应平台。
 
 **侧边栏**
-- 网易云：首页（每日推荐卡片）、每日推荐、私人 FM、排行榜、网易云 · 我喜欢
-- Spotify：Spotify 首页（Made For You 等，需私有接口）、Spotify · 喜欢的歌曲
+- 先列网易云：每日推荐、私人 FM、排行榜、播客等；最后是 Spotify 页（Made For You 等，需私有接口）
+- 首页只放网易云的内容
 - 歌单同步
-- 两边歌单都进“我的歌单”，名字加平台标记，比如 `[网]`、`[S]`，标记方式做成可配置
+- 两边歌单都进侧边栏的歌单区，名字保持各平台原样，网易云的在前、Spotify 的在后；Spotify 的喜欢叫“已点赞的歌曲”
 
 **各项功能**
 - **搜索**：默认两边都搜、分段显示，支持 `sp:`、`ne:` 前缀只搜一边。
